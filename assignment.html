@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRUD Operations on a Table in Vue.js</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="user in users" :key="user.id">
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <button @click="editUser(user)">Edit</button>
+            <button @click="deleteUser(user)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <form class="editform" v-if="editing" @submit.prevent="saveUser">
+      <input type="hidden" v-model="editing.id">
+      <label>Name:</label>
+      <input type="text" v-model="editing.name">
+      <label>Email:</label>
+      <input type="email" v-model="editing.email">
+      <button type="submit">Save</button>
+    </form>
+    <form class="newform" v-if="!editing" @submit.prevent="addUser">
+      <label>Name:</label>
+      <input type="text" v-model="newUser.name">
+      <label>Email:</label>
+      <input type="email" v-model="newUser.email">
+      <button type="submit">Add</button>
+    </form>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        users: [
+          { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
+          { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' },
+          { id: 3, name: 'Bob Johnson', email: 'bob.johnson@example.com' }
+        ],
+        editing: null,
+        newUser: {
+          name: '',
+          email: ''
+        }
+      },
+      methods: {
+        editUser(user) {
+          this.editing = user
+        },
+        deleteUser(user) {
+          this.users = this.users.filter(u => u.id!== user.id)
+        },
+        saveUser() {
+          if (this.editing) {
+            this.users = this.users.map(u => {
+              if (u.id === this.editing.id) {
+                return this.editing
+              } else {
+                return u
+              }
+            })
+          } else {
+            this.users.push(this.newUser)
+          }
+          this.editing = null
+          this.newUser = {
+            name: '',
+            email: ''
+          }
+        },
+        cancelEdit() {
+          this.editing = null
+          this.newUser = {
+            name: '',
+            email: ''
+          }
+        },
+        addUser() {
+          this.editing = this.newUser
+		  this.editing.id = this.users.length + 1
+		  this.users.push(this.editing);
+		  this.editing = null;
+		  this.newUser = {
+            name: '',
+            email: ''
+          }
+        }
+      }
+    })
+  </script>
+</body>
+</html>
